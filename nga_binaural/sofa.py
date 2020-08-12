@@ -123,7 +123,7 @@ def calc_delay_of_irs(irs):
     return totalavg_mindelay
     
 def get_binaural_layout(spec):
-    bs2051.layout_names, bs2051.layouts=binaural_point_source._load_binaural_layouts()
-    allocentric._allo_positions=binaural_point_source._load_allo_positions_binaural()
-
+    bs2051.layout_names, bs2051.layouts = binaural_point_source._load_binaural_layouts()
+    allocentric._allo_positions = binaural_point_source._load_allo_positions_binaural()
+    
     return bs2051.get_layout(spec[1]).without_lfe

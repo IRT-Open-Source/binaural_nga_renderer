@@ -8,7 +8,7 @@ setup(
     long_description_content_type='text/markdown',
     install_requires=[
         'numpy~=1.14',
-        'pydub~=0.23.1',
+        'pydub>=0.23.1',
         'scipy~=1.0',
         'ear~=2.0.0',
         'h5py==2.10.0'

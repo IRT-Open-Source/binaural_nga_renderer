@@ -37,6 +37,7 @@ The *NGA-Binaural* comes with the following command line tool:
 
 ```bash
 usage: nga-binaural [-h] [-d]
+                    [-s target_system]
                     [--output-gain-db gain_db] [--fail-on-overload]
                     [--enable-block-duration-fix] [--programme id]
                     [--comp-object id]
@@ -72,6 +73,8 @@ To render an ADM file, the following two parameters must be given:
   - the name of the output file
 
 For example `nga-binaural input.wav output_binaural.wav` will render the BW64/ADM file `input.wav` and store the result in `output_binaural.wav`.
+
+`-s` followed by a target, BS2051-output format can be used to render to a specific virtual loudspeaker setup. Otherwise, a virtual 49 speaker setup will be used that is optimized for rendering quality, but requires a lot of computational cost.
 
 `--fail-on-overload` makes the rendering process fail in case an overload in the output channels occurs to ensure any signal clipping doesn't go unnoticed. Use `--output-gain-db` to adjust the output gain.
 

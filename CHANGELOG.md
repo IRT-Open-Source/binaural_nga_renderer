@@ -1,0 +1,1 @@
+- added capability to use BS2051 loudspeaker setups

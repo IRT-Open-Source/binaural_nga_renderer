@@ -8,6 +8,7 @@ from . import sofa, binaural_point_source
 from .matrix_convolver import MatrixBlockConvolver
 from .convolver import VariableBlockSizeAdapter
 from .align_irs import align_irs
+from .binaural_layout import BinauralOutput
 
 binaural_output_options = OptionsHandler(
     block_size=Option(
@@ -39,6 +40,7 @@ class BinauralWrapper(object):
     def __init__(self,
                  renderer_cls,
                  layout,
+                 virtual_layout,
                  sr,
                  block_size,
                  virtual_layout_hrir,
@@ -47,11 +49,18 @@ class BinauralWrapper(object):
                  brir_file,
                  renderer_opts={}):
 
-        point_source.configure=binaural_point_source.configure
+        point_source.configure = binaural_point_source.configure
 
         """load layouts for all three renderings"""
-        hrir_layout = sofa.get_binaural_layout(virtual_layout_hrir)
-        brir_layout = sofa.get_binaural_layout(virtual_layout_brir)
+        
+        if virtual_layout is None:
+            hrir_layout = sofa.get_binaural_layout(virtual_layout_hrir)
+        else:
+            hrir_layout = sofa.get_binaural_layout(('bs2051', virtual_layout))
+        if len(hrir_layout.channels) < 22:
+            brir_layout = hrir_layout
+        else:
+            brir_layout = sofa.get_binaural_layout(virtual_layout_brir)
         dirir_layout = sofa.get_binaural_layout(("binaural", "binaural_direct"))
 
         """define three renderers"""
@@ -74,7 +83,7 @@ class BinauralWrapper(object):
             brirs = signal.resample(
                 brirs, int(len(brirs) / brir_sofa_file.check_fs() * sr))
         brirs = brirs / sofa.calc_gain_of_irs(
-            brirs) * 0.05542830927315457 / 1.5 
+            brirs) * 0.05542830927315457 / 2 
         brirs = np.concatenate(
             (np.zeros([len(brirs), 2,
                        int(sofa.calc_delay_of_irs(hrirs)) - 1]), brirs), axis=2)

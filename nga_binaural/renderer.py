@@ -42,6 +42,7 @@ class BinauralRenderer(object):
     @options.with_defaults
     def __init__(self,
                  layout,
+                 virtual_layout,
                  sr,
                  object_renderer_opts={},
                  direct_speakers_opts={},
@@ -52,6 +53,7 @@ class BinauralRenderer(object):
         self._object_renderer = BinauralWrapper(
             ObjectRenderer,
             layout,
+            virtual_layout,
             sr,
             renderer_opts=object_renderer_opts,
             **binaural_output_opts)
@@ -59,12 +61,14 @@ class BinauralRenderer(object):
         self._direct_speakers_renderer = BinauralWrapper(
             DirectSpeakersRenderer,
             layout,
+            virtual_layout,
             sr,
             renderer_opts=direct_speakers_opts,
             **binaural_output_opts)
 
         self._hoa_renderer = BinauralWrapper(HOARenderer,
                                              layout,
+                                             virtual_layout,
                                              sr,
                                              renderer_opts=hoa_renderer_opts,
                                              **binaural_output_opts)

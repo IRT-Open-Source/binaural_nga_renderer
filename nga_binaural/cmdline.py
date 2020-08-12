@@ -2,6 +2,7 @@ import argparse
 from ear.cmdline.render_file import OfflineRenderDriver, handle_strict, PeakMonitor
 from pydub import AudioSegment
 from pydub.effects import normalize
+from ear.core import bs2051, layout
 from ear.fileio import openBw64, openBw64Adm
 from ear.fileio.bw64.chunks import FormatInfoChunk
 from .binaural_layout import BinauralOutput
@@ -13,7 +14,8 @@ import sys
 
 def _run(driver, input_file, output_file):
     """Render input_file to output_file."""
-    spkr_layout, upmix, n_channels = driver.load_output_layout()
+    spkr_layout, upmix, n_channels = driver.load_output_layout(driver)
+    virtual_layout = driver.target_layout
 
     output_monitor = PeakMonitor(n_channels)
 
@@ -23,7 +25,7 @@ def _run(driver, input_file, output_file):
                                      sampleRate=infile.sampleRate,
                                      bitsPerSample=infile.bitdepth)
         with openBw64(output_file, "w", formatInfo=formatInfo) as outfile:
-            for output_block in driver.render_input_file(driver, infile, spkr_layout, upmix):
+            for output_block in driver.render_input_file(driver, infile, spkr_layout, virtual_layout, upmix):
                 output_monitor.process(output_block)
                 outfile.write(output_block)
 
@@ -34,7 +36,7 @@ def _run(driver, input_file, output_file):
     normalized_output = normalize(AudioSegment.from_file(output_file), headroom=0.3)
     normalized_output.export(output_file, format="wav")
 
-def _load_binaural_output_layout():
+def _load_binaural_output_layout(driver):
     spkr_layout = BinauralOutput()
     upmix = None
     n_channels = 2
@@ -42,7 +44,7 @@ def _load_binaural_output_layout():
     return spkr_layout, upmix, n_channels
 
 
-def _render_input_file_binaural(driver, infile, spkr_layout, upmix=None):
+def _render_input_file_binaural(driver, infile, spkr_layout, virtual_layout, upmix=None):
     """Get sample blocks of the input file after rendering.
 
         Parameters:
@@ -54,6 +56,7 @@ def _render_input_file_binaural(driver, infile, spkr_layout, upmix=None):
             2D sample blocks
         """
     renderer = BinauralRenderer(spkr_layout,
+                                virtual_layout,
                                 sr=infile.sampleRate,
                                 **driver.config)
     renderer.set_rendering_items(driver.get_rendering_items(infile.adm))
@@ -79,6 +82,10 @@ def add_commands_for_offline_driver(parser):
     This is essentially a modified version of OfflineRendererDriver.add_args()
     for the binaural use case.
     """
+    formats_string = ", ".join(bs2051.layout_names)
+    parser.add_argument("-s", "--system", required=False, metavar="target_system",
+                            help="Target output system, accoring to ITU-R BS.2051. "
+                                 "Available systems are: {}".format(formats_string))
     parser.add_argument("--output-gain-db",
                         type=float,
                         metavar="gain_db",
@@ -138,7 +145,7 @@ def render_file():
 
     try:
         driver = OfflineRenderDriver(
-            target_layout='binaural',
+            target_layout=args.system,
             speakers_file=None,
             output_gain_db=args.output_gain_db,
             fail_on_overload=args.fail_on_overload,
