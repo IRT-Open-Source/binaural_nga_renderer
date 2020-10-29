@@ -5,6 +5,7 @@ The **Binaural NGA Renderer** **(*NGA-Binaural*)** is an addon that provides bin
 This **Binaural NGA Renderer** provides an implementation of the rendering structure, as well as the optimization approaches that are described in the the  AES paper "Optimized binaural rendering of Next Generation Audio using virtual loudspeaker setups".
 
 
+
 Further descriptions of the *EAR* algorithms and functionalities can be found in [EBU Tech 3388](https://tech.ebu.ch/publications/adm-renderer-for-use-in-nga-broadcasting).
 
 ## Test files

@@ -1,6 +1,11 @@
 MIT License
 
-Copyright (c) 2020 Institut für Rundfunktechnik GmbH (IRT)
+Copyright (c) 2020 Institut für Rundfunktechnik GmbH (IRT), ###except for data/HRIR_FULL2DEG.sofa###
+
+### The HRTF "data/HRIR_FULL2DEG.sofa" by B. Bernschuetz, included with this repository is not included in the MIT License.
+### It is, however, granted by one of the authors of the file, J. Arend, to be included in the repository.
+### The HRTF is licensed as CC BY-SA 3.0. 
+### Additional information to the HRTF can be found under http://audiogroup.web.th-koeln.de/ku100hrir.html.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
