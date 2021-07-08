@@ -42,7 +42,8 @@ usage: nga-binaural [-h] [-d]
                     [--output-gain-db gain_db] [--fail-on-overload]
                     [--enable-block-duration-fix] [--programme id]
                     [--comp-object id]
-                    [--apply-conversion {to_cartesian,to_polar}] [--strict]
+                    [--apply-conversion {to_cartesian,to_polar}] 
+                    [--peak_normalization] [--strict]
                     input_file output_file
 
 Binaural NGA Renderer
@@ -66,6 +67,8 @@ optional arguments:
   --apply-conversion {to_cartesian,to_polar}
                         Apply conversion to Objects audioBlockFormats before
                         rendering
+  --peak_normalization, -pn
+                        perform a peak normalization of the output
   --strict              treat unknown ADM attributes as errors
 ```
 

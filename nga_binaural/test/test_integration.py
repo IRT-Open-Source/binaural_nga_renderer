@@ -18,7 +18,7 @@ def read_audio_file(filename):
 
 def test_rendering_file(tmpdir):
     rendered_file = os.path.join(tmpdir, "test_binaural_render.wav")
-    args = ['nga-binaural', '-d', bwf_file, rendered_file]
+    args = ['nga-binaural', '-d', '-pn', bwf_file, rendered_file]
     assert subprocess.call(args) == 0
 
     samples, sr = read_audio_file(rendered_file)
