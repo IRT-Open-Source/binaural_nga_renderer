@@ -2,6 +2,7 @@ import copy
 from ear.options import Option, OptionsHandler
 from ear.core.metadata_input import ObjectRenderingItem
 from ear.core import point_source
+from ear.fileio.adm.elements import ObjectPolarPosition
 import numpy as np
 from scipy import signal
 from . import sofa, binaural_point_source
@@ -140,9 +141,10 @@ class BinauralWrapper(object):
             if isinstance(objects[1], ObjectRenderingItem):
 
                 for audioBlock in objects[1].adm_path.audioChannelFormat.audioBlockFormats[:]:
-                    if audioBlock.position.distance <= 0.3:
-                        audioBlock.gain *= (audioBlock.position.distance / 0.3)
-                    audioBlock.position.distance = 1
+                    if isinstance(audioBlock.position, ObjectPolarPosition):
+                        if audioBlock.position.distance <= 0.3:
+                            audioBlock.gain *= (audioBlock.position.distance / 0.3)
+                        audioBlock.position.distance = 1
 
         return rendering_items_hrir
 
@@ -153,11 +155,12 @@ class BinauralWrapper(object):
             if isinstance(objects[1], ObjectRenderingItem):
 
                 for audioBlock in objects[1].adm_path.audioChannelFormat.audioBlockFormats[:]:
-                    if audioBlock.position.distance <= 1 and audioBlock.position.distance > 0.2:
-                        audioBlock.gain *= (audioBlock.position.distance - 0.2) / 0.8
-                    if audioBlock.position.distance <= 0.2:
-                        audioBlock.gain = 0
-                    audioBlock.position.distance = 1
+                    if isinstance(audioBlock.position, ObjectPolarPosition):
+                        if audioBlock.position.distance <= 1 and audioBlock.position.distance > 0.2:
+                            audioBlock.gain *= (audioBlock.position.distance - 0.2) / 0.8
+                        if audioBlock.position.distance <= 0.2:
+                            audioBlock.gain = 0
+                        audioBlock.position.distance = 1
 
         return rendering_items_brir
 
@@ -168,11 +171,14 @@ class BinauralWrapper(object):
             if isinstance(objects[1], ObjectRenderingItem):
 
                 for audioBlock in objects[1].adm_path.audioChannelFormat.audioBlockFormats[:]:
-                    if audioBlock.position.distance > 0.3:
+                    if isinstance(audioBlock.position, ObjectPolarPosition):
+                        if audioBlock.position.distance > 0.3:
+                            audioBlock.gain = 0
+                        if audioBlock.position.distance <= 0.3:
+                            audioBlock.gain *= 1 - (audioBlock.position.distance / 0.3)
+                        audioBlock.position.distance = 1
+                    else:
                         audioBlock.gain = 0
-                    if audioBlock.position.distance <= 0.3:
-                        audioBlock.gain *= 1 - (audioBlock.position.distance / 0.3)
-                    audioBlock.position.distance = 1
 
             else:
                 rendering_items_direct = []
