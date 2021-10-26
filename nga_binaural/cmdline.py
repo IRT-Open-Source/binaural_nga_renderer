@@ -12,7 +12,7 @@ import sys
 
 """this is a modified version of render_file.py from the EAR. It was modified to adapt to the binaural rendering structure."""
 
-def _run(driver, input_file, output_file):
+def _run(driver, input_file, output_file, peak_normalization):
     """Render input_file to output_file."""
     spkr_layout, upmix, n_channels = driver.load_output_layout(driver)
     virtual_layout = driver.target_layout
@@ -33,8 +33,12 @@ def _run(driver, input_file, output_file):
     if driver.fail_on_overload and output_monitor.has_overloaded():
         sys.exit("error: output overloaded")
 
-    normalized_output = normalize(AudioSegment.from_file(output_file), headroom=0.3)
-    normalized_output.export(output_file, format="wav")
+    output = AudioSegment.from_file(output_file)
+
+    if peak_normalization:
+        output = normalize(output, headroom=0.3)
+    
+    output.export(output_file, format="wav")
 
 def _load_binaural_output_layout(driver):
     spkr_layout = BinauralOutput()
@@ -130,6 +134,11 @@ def parse_command_line():
     parser.add_argument("input_file")
     parser.add_argument("output_file")
 
+    parser.add_argument("--peak_normalization",
+                        "-pn",
+                        help="perform a peak normalization of the output",
+                        action="store_true")
+
     parser.add_argument("--strict",
                         help="treat unknown ADM attributes as errors",
                         action="store_true")
@@ -159,7 +168,7 @@ def render_file():
         driver.render_input_file = _render_input_file_binaural
         driver.run = _run
 
-        driver.run(driver, args.input_file, args.output_file)
+        driver.run(driver, args.input_file, args.output_file, args.peak_normalization)
     except Exception as error:
         if args.debug:
             raise
