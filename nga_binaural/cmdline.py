@@ -1,10 +1,11 @@
 import argparse
-from ear.cmdline.render_file import OfflineRenderDriver, handle_strict, PeakMonitor
+from .ear_cmdline_render_file import OfflineRenderDriver, handle_strict
 from pydub import AudioSegment
 from pydub.effects import normalize
 from ear.core import bs2051, layout
 from ear.fileio import openBw64, openBw64Adm
 from ear.fileio.bw64.chunks import FormatInfoChunk
+from ear.core.monitor import PeakMonitor
 from .binaural_layout import BinauralOutput
 from .renderer import BinauralRenderer
 from itertools import chain
