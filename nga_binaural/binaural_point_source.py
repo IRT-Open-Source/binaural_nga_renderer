@@ -3,7 +3,7 @@ from attr import attrs, attrib
 from ear.options import OptionsHandler
 from ear.core import bs2051, point_source
 import pkg_resources
-from ruamel import yaml
+from ruamel.yaml import YAML
 from . import sofa
 
 """this is a modified version of point_source.py from the EAR. It was modified to adapt to the binaural rendering structure."""
@@ -11,7 +11,8 @@ from . import sofa
 def _load_binaural_layouts():
     fname = "data/binaural_layouts.yaml"
     with pkg_resources.resource_stream(__name__, fname) as layouts_file:
-        layouts_data = yaml.safe_load(layouts_file)
+        yaml = YAML(typ='safe', pure=True)
+        layouts_data = yaml.load(layouts_file)
 
         layouts = list(map(bs2051._dict_to_layout, layouts_data))
 
@@ -31,7 +32,8 @@ def _load_allo_positions_binaural():
 
     fname = "data/binaural_layouts_allo.yaml"
     with pkg_resources.resource_stream(__name__, fname) as layouts_file:
-        return yaml.safe_load(layouts_file)
+        yaml = YAML(typ='safe', pure=True)
+        return yaml.load(layouts_file)
 
 @attrs(slots=True)
 class StereoPanDownmix_Binaural(point_source.RegionHandler): 
